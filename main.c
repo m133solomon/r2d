@@ -1,6 +1,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include "r2d/graphics.h"
+#include "r2d/mathematics.h"
 #include "r2d/r2d.h"
 
 #include "r2d/include/SDL2/SDL_opengl.h"

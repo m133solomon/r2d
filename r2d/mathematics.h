@@ -12,9 +12,7 @@ typedef struct
     int y;
 } Vec2;
 
-const Vec2 Vec2_NULL;
-
-bool Vec2_is_null(Vec2 *vec);
+bool Vec2_are_equal(Vec2 *u, Vec2 *v);
 
 Vec2 Vec2_add(Vec2 *u, Vec2 *v);
 Vec2 Vec2_substract(Vec2 *u, Vec2 *v);

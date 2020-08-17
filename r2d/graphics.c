@@ -1,11 +1,13 @@
 #include "graphics.h"
 #include "include/SDL2/SDL_render.h"
+#include "mathematics.h"
 
 void Canvas_init(Canvas *canvas, SDL_Window *window)
 {
     canvas->clear_color = (Color) { 50, 50, 50, 255 };
     canvas->renderer_flags = SDL_RENDERER_ACCELERATED;
-    canvas->last_position = Vec2_NULL;
+    canvas->state_saved = false;
+    canvas->last_position = (Vec2) { 0, 0 };
     canvas->position = (Vec2) { 0, 0 };
     canvas->renderer = SDL_CreateRenderer(window, -1, canvas->renderer_flags);
 }
@@ -21,9 +23,6 @@ void Canvas_clear(Canvas *canvas)
         canvas->clear_color.a
     );
     SDL_RenderClear(canvas->renderer);
-
-    LOG_INFO("hello da"); 
-    LOG_ERROR("hello world");
 }
 
 void Canvas_present(Canvas *canvas)
@@ -33,15 +32,23 @@ void Canvas_present(Canvas *canvas)
 
 void Canvas_push_state(Canvas *canvas)
 {
-    if (Vec2_is_null(&canvas->last_position))
+    if (canvas->state_saved)
     {
-        
+        LOG_ERROR("Canvas: Cannot call push again before pop (probably 2 consecutive pushes)");
+        return;
     }
+    canvas->state_saved = true;
     canvas->last_position = canvas->position;
 }
 
 void Canvas_pop_state(Canvas *canvas)
 {
+    if (!canvas->state_saved)
+    {
+        LOG_WARN("Canvas: state already popped (probably 2 consecutive pops)");
+        return;
+    }
+    canvas->state_saved = false;
     canvas->position = canvas->last_position;
 }
 

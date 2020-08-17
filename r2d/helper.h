@@ -24,6 +24,7 @@
 #define BOLDWHITE   "\033[1m\033[37m"      /* Bold White */
 
 void LOG_ERROR(char *fmt, ...);
+void LOG_WARN(char *fmt, ...);
 void LOG_INFO(char *fmt, ...);
 
 #endif // HELPER_H

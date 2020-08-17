@@ -19,6 +19,7 @@ typedef struct
 
     Vec2 size;
 
+    bool state_saved;
     Vec2 position;
     Vec2 last_position;
 } Canvas;
