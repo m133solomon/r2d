@@ -5,6 +5,11 @@ int Random_int(int min, int max)
     return (rand() % (min - max + 1)) + min;
 }
 
+bool Vec2_is_null(Vec2 *vec)
+{
+    return vec->x == Vec2_NULL.x && vec->y == Vec2_NULL.y;
+}
+
 Vec2 Vec2_add(Vec2 *u, Vec2 *v)
 {
     Vec2 result;

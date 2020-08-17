@@ -3,7 +3,7 @@ CXX = gcc
 
 PROG = game
 
-OBJS = color.o mathematics.o graphics.o r2d.o main.o
+OBJS = helper.o color.o mathematics.o graphics.o r2d.o main.o
 
 all: $(PROG)
 

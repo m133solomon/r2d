@@ -15,8 +15,6 @@ Application Application_new()
     application.title = "C game engine";
     application.time_manager = (TimeManager){ 0, 0, 0 };
     application.window_flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
-    application.renderer_flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
-    application.background_color = Color_new_rgb(50, 50, 50);
     return application;
 }
 
@@ -31,12 +29,12 @@ void Application_init(Application *application)
             application->window_flags
         );
 
-    application->renderer = SDL_CreateRenderer(application->window, -1, application->renderer_flags);
+    Canvas_init(&application->canvas, application->window);
 }
 
 void Application_cleanup(Application *application)
 {
-    SDL_DestroyRenderer(application->renderer);
+    SDL_DestroyRenderer(application->canvas.renderer);
     SDL_DestroyWindow(application->window);
     SDL_Quit();
 }
@@ -59,19 +57,9 @@ void Application_loop(Application *application)
 
         TimeManager_tick(&application->time_manager);
 
-        SDL_SetRenderDrawColor
-        (
-            application->renderer,
-            application->background_color.r,
-            application->background_color.g,
-            application->background_color.b,
-            application->background_color.a
-        );
-        SDL_RenderClear(application->renderer);
-
+        Canvas_clear(&application->canvas);
         application->draw_func();
-
-        SDL_RenderPresent(application->renderer);
+        Canvas_present(&application->canvas);
     }
 
     Application_cleanup(application);
@@ -101,10 +89,4 @@ uint32_t Application_get_fps(Application *application)
     }
 
     return 1 / (application->time_manager.delta_time / 1000.0f);
-}
-
-void Application_set_fill_color(Application *application, Color color)
-{
-    application->fill_color = color;
-    SDL_SetRenderDrawColor(application->renderer, color.r, color.g, color.b, color.a);
 }

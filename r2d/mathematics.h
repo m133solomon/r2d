@@ -2,6 +2,7 @@
 #define MATHEMATICS_H
 
 #include <stdlib.h>
+#include <stdbool.h>
 
 int Random_int(int min, int max);
 
@@ -10,6 +11,10 @@ typedef struct
     int x;
     int y;
 } Vec2;
+
+const Vec2 Vec2_NULL;
+
+bool Vec2_is_null(Vec2 *vec);
 
 Vec2 Vec2_add(Vec2 *u, Vec2 *v);
 Vec2 Vec2_substract(Vec2 *u, Vec2 *v);

@@ -1,11 +1,66 @@
 #include "graphics.h"
+#include "include/SDL2/SDL_render.h"
 
-void Rect_fill(SDL_Renderer *renderer, Rect *rect)
+void Canvas_init(Canvas *canvas, SDL_Window *window)
 {
-    SDL_RenderFillRect(renderer, (SDL_Rect*)rect);
+    canvas->clear_color = (Color) { 50, 50, 50, 255 };
+    canvas->renderer_flags = SDL_RENDERER_ACCELERATED;
+    canvas->last_position = Vec2_NULL;
+    canvas->position = (Vec2) { 0, 0 };
+    canvas->renderer = SDL_CreateRenderer(window, -1, canvas->renderer_flags);
 }
 
-void Rect_stroke(SDL_Renderer *renderer, Rect *rect, uint32_t weight)
+void Canvas_clear(Canvas *canvas)
+{
+    SDL_SetRenderDrawColor
+    (
+        canvas->renderer,
+        canvas->clear_color.r,
+        canvas->clear_color.g,
+        canvas->clear_color.b,
+        canvas->clear_color.a
+    );
+    SDL_RenderClear(canvas->renderer);
+
+    LOG_INFO("hello da"); 
+    LOG_ERROR("hello world");
+}
+
+void Canvas_present(Canvas *canvas)
+{
+    SDL_RenderPresent(canvas->renderer);
+}
+
+void Canvas_push_state(Canvas *canvas)
+{
+    if (Vec2_is_null(&canvas->last_position))
+    {
+        
+    }
+    canvas->last_position = canvas->position;
+}
+
+void Canvas_pop_state(Canvas *canvas)
+{
+    canvas->position = canvas->last_position;
+}
+
+void Canvas_set_clear_color(Canvas *canvas, Color color)
+{
+    canvas->clear_color = color;
+}
+
+void Canvas_set_fill_color(Canvas *canvas, Color color)
+{
+    SDL_SetRenderDrawColor(canvas->renderer, color.r, color.g, color.b, color.a);
+}
+
+void Canvas_fill_rect(Canvas *canvas, Rect *rect)
+{
+    SDL_RenderFillRect(canvas->renderer, (SDL_Rect*)rect);
+}
+
+void Canvas_stroke_rect(Canvas *canvas, Rect *rect, uint32_t weight)
 {
     if (weight == 0)
     {
@@ -14,7 +69,7 @@ void Rect_stroke(SDL_Renderer *renderer, Rect *rect, uint32_t weight)
 
     if (weight == 1)
     {
-        SDL_RenderDrawRect(renderer, (SDL_Rect*)rect);
+        SDL_RenderDrawRect(canvas->renderer, (SDL_Rect*)rect);
         return;
     }
 
@@ -25,16 +80,16 @@ void Rect_stroke(SDL_Renderer *renderer, Rect *rect, uint32_t weight)
         int w = rect->w + i * 2;
         int h = rect->h + i * 2;
         SDL_Rect rect = { x, y, w, h };
-        SDL_RenderDrawRect(renderer, &rect);
+        SDL_RenderDrawRect(canvas->renderer, &rect);
     }
 }
 
-void Line_stroke(SDL_Renderer *renderer, Line *line)
+void Canvas_stroke_line(Canvas *canvas, Line *line)
 {
-    SDL_RenderDrawLine(renderer, line->x1, line->y1, line->x2, line->y2);
+    SDL_RenderDrawLine(canvas->renderer, line->x1, line->y1, line->x2, line->y2);
 }
 
-void Circle_stroke(SDL_Renderer *renderer, Circle *circle)
+void Canvas_stroke_circle(Canvas *canvas, Circle *circle)
 {
     const int32_t diameter = (circle->r * 2);
 
@@ -46,14 +101,14 @@ void Circle_stroke(SDL_Renderer *renderer, Circle *circle)
 
     while (x >= y)
     {
-        SDL_RenderDrawPoint(renderer, circle->x + x, circle->y - y);
-        SDL_RenderDrawPoint(renderer, circle->x + x, circle->y + y);
-        SDL_RenderDrawPoint(renderer, circle->x - x, circle->y - y);
-        SDL_RenderDrawPoint(renderer, circle->x - x, circle->y + y);
-        SDL_RenderDrawPoint(renderer, circle->x + y, circle->y - x);
-        SDL_RenderDrawPoint(renderer, circle->x + y, circle->y + x);
-        SDL_RenderDrawPoint(renderer, circle->x - y, circle->y - x);
-        SDL_RenderDrawPoint(renderer, circle->x - y, circle->y + x);
+        SDL_RenderDrawPoint(canvas->renderer, circle->x + x, circle->y - y);
+        SDL_RenderDrawPoint(canvas->renderer, circle->x + x, circle->y + y);
+        SDL_RenderDrawPoint(canvas->renderer, circle->x - x, circle->y - y);
+        SDL_RenderDrawPoint(canvas->renderer, circle->x - x, circle->y + y);
+        SDL_RenderDrawPoint(canvas->renderer, circle->x + y, circle->y - x);
+        SDL_RenderDrawPoint(canvas->renderer, circle->x + y, circle->y + x);
+        SDL_RenderDrawPoint(canvas->renderer, circle->x - y, circle->y - x);
+        SDL_RenderDrawPoint(canvas->renderer, circle->x - y, circle->y + x);
 
         if (error <= 0)
         {
@@ -70,7 +125,7 @@ void Circle_stroke(SDL_Renderer *renderer, Circle *circle)
     }
 }
 
-void Circle_fill(SDL_Renderer *renderer, Circle *circle)
+void Canvas_fill_circle(Canvas *canvas, Circle *circle)
 {
     int x = circle->x;
     int y = circle->y;
@@ -86,10 +141,10 @@ void Circle_fill(SDL_Renderer *renderer, Circle *circle)
 
     while (offsety >= offsetx)
     {
-        status += SDL_RenderDrawLine(renderer, x - offsety, y + offsetx, x + offsety, y + offsetx);
-        status += SDL_RenderDrawLine(renderer, x - offsetx, y + offsety, x + offsetx, y + offsety);
-        status += SDL_RenderDrawLine(renderer, x - offsetx, y - offsety, x + offsetx, y - offsety);
-        status += SDL_RenderDrawLine(renderer, x - offsety, y - offsetx, x + offsety, y - offsetx);
+        status += SDL_RenderDrawLine(canvas->renderer, x - offsety, y + offsetx, x + offsety, y + offsetx);
+        status += SDL_RenderDrawLine(canvas->renderer, x - offsetx, y + offsety, x + offsetx, y + offsety);
+        status += SDL_RenderDrawLine(canvas->renderer, x - offsetx, y - offsety, x + offsetx, y - offsety);
+        status += SDL_RenderDrawLine(canvas->renderer, x - offsety, y - offsetx, x + offsety, y - offsetx);
 
         if (status < 0)
         {

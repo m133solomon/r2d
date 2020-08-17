@@ -1,11 +1,14 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
+
 /*
  * Execrable game engine by m133solomon
  * Built with fucking C
  * Should have:
  *
  * - shapes: stroke / fill
+ * - sprite sheet animation
+ * - camera / zoom / window resize
  * - tweens
  * - ecs
  * - basic shape intersection
@@ -18,12 +21,26 @@
  *   -- BIND TO FUCKING JAVASCRIPT
  */
 
+/*
+ * HOW IT SHOULD WORK:
+ * - huge mf application struct
+ *   handles input audio canvas etc
+ *
+ * - another huge canvas class
+ *   for graphoics
+ *   - primitives
+ *   - fill stroke
+ *   - shaders
+ *   - camera
+ */
+
 #include "include/SDL2/SDL.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
 
+#include "helper.h"
 #include "color.h"
 #include "mathematics.h"
 #include "graphics.h"
@@ -47,10 +64,10 @@ typedef struct
     TimeManager time_manager;
 
     Uint32 window_flags;
-    Uint32 renderer_flags;
 
     SDL_Window *window;
-    SDL_Renderer *renderer;
+
+    Canvas canvas;
 
     void (*draw_func)();
 
@@ -58,6 +75,7 @@ typedef struct
 } Application;
 
 Application Application_new();
+
 void Application_init(Application *application);
 void Application_cleanup(Application *application);
 void Application_loop(Application *application);
@@ -66,7 +84,5 @@ float Application_get_delta_time(Application *application);
 uint32_t Application_get_fps(Application *application);
 
 void Application_set_window_title(Application *application, char * title);
-
-void Application_set_fill_color(Application *application, Color color);
 
 #endif // APPLICATION_H
