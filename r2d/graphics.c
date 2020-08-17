@@ -1,5 +1,4 @@
 #include "graphics.h"
-#include "include/SDL2/SDL_render.h"
 #include "mathematics.h"
 
 void Canvas_init(Canvas *canvas, SDL_Window *window)
@@ -14,6 +13,10 @@ void Canvas_init(Canvas *canvas, SDL_Window *window)
 
 void Canvas_clear(Canvas *canvas)
 {
+    // dont forget to reset the transformations;
+    canvas->position = (Vec2) { 0, 0 };
+    canvas->last_position = (Vec2) { 0, 0 };
+
     SDL_SetRenderDrawColor
     (
         canvas->renderer,
@@ -52,6 +55,12 @@ void Canvas_pop_state(Canvas *canvas)
     canvas->position = canvas->last_position;
 }
 
+void Canvas_translate(Canvas *canvas, int x, int y)
+{
+    canvas->position.x = x;
+    canvas->position.y = y;
+}
+
 void Canvas_set_clear_color(Canvas *canvas, Color color)
 {
     canvas->clear_color = color;
@@ -64,7 +73,12 @@ void Canvas_set_fill_color(Canvas *canvas, Color color)
 
 void Canvas_fill_rect(Canvas *canvas, Rect *rect)
 {
-    SDL_RenderFillRect(canvas->renderer, (SDL_Rect*)rect);
+    SDL_Rect draw_rect;
+    draw_rect.x = canvas->position.x + rect->x;
+    draw_rect.y = canvas->position.y + rect->y;
+    draw_rect.w = rect->w;
+    draw_rect.h = rect->h;
+    SDL_RenderFillRect(canvas->renderer, &draw_rect);
 }
 
 void Canvas_stroke_rect(Canvas *canvas, Rect *rect, uint32_t weight)
@@ -156,6 +170,7 @@ void Canvas_fill_circle(Canvas *canvas, Circle *circle)
         if (status < 0)
         {
             status = -1;
+            LOG_ERROR("Canvas: error filling circle (graphics.c: Canvas_fill_circle");
             break;
         }
 

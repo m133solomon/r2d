@@ -17,8 +17,8 @@ int main()
     application = Application_new();
     application.draw_func = draw;
     application.screen_size = (Vec2) { 800, 600 };
-    Application_init(&application);
 
+    Application_init(&application);
     init();
     Application_loop(&application);
 
@@ -27,11 +27,17 @@ int main()
 
 void init()
 {
+    Canvas_set_clear_color(&application.canvas, Color_new_rgb(0, 0, 0));
 }
 
 void draw()
 {
-    Canvas_set_fill_color(&application.canvas, COLOR_YELLOW);
+    Canvas_set_fill_color(&application.canvas, Color_new_rgb(255, 255, 255));
+
+    Canvas_fill_rect(&application.canvas, &((Rect) { 100, 100, 100, 100 }));
+
+    Canvas_translate(&application.canvas, -100, -100);
+
     Canvas_fill_rect(&application.canvas, &((Rect) { 100, 100, 100, 100 }));
 
     if (application.time_manager.delta_time != 0)

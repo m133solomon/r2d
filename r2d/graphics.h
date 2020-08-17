@@ -17,9 +17,8 @@ typedef struct
     Color clear_color;
     Color draw_color;
 
-    Vec2 size;
-
     bool state_saved;
+
     Vec2 position;
     Vec2 last_position;
 } Canvas;
@@ -30,6 +29,8 @@ void Canvas_present(Canvas *canvas);
 
 void Canvas_push_state(Canvas *canvas);
 void Canvas_pop_state(Canvas *canvas);
+
+void Canvas_translate(Canvas *canvas, int x, int y);
 
 void Canvas_set_clear_color(Canvas *canvas, Color color);
 void Canvas_set_fill_color(Canvas *canvas, Color color);
